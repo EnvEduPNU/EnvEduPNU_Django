@@ -6,6 +6,7 @@ on:
   pull_request:
     branches: [ "main" ]
 
+
 jobs:
   continuous-integration:
     runs-on: ubuntu-latest
@@ -48,7 +49,7 @@ jobs:
         id: deploy
         run: |
           aws deploy create-deployment \
-            --application-name django-test-codedeploy \
-            --deployment-group-name django-test-codedeploy-group \
+            --application-name EnvEduServer_CodeDeploy \
+            --deployment-group-name EnvEduServer_CodeDeploy \
             --deployment-config-name CodeDeployDefault.OneAtATime \
             --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
