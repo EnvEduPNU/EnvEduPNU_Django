@@ -1,0 +1,12 @@
+version: 0.0
+os: linux
+files:
+ - source: .
+   destination: /home/ubuntu/EnvEdu_Django
+hooks:
+  BeforeInstall:
+     timeout: 300
+     runas: root
+  ApplicationStart:
+   - location: scripts/install_app_dependencies
+     runas: root
