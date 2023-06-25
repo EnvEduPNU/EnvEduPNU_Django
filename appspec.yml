@@ -7,9 +7,6 @@ hooks:
   BeforeInstall:
      timeout: 300
      runas: root
-  Install:
-   - location: scripts/install_app_dependencies
-     runas: root
   ApplicationStart:
-   - location: scripts/start_server
+   - location: scripts/install_app_dependencies
      runas: root
