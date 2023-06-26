@@ -45,8 +45,13 @@ jobs:
   continuous-deployment:
     runs-on: ubuntu-20.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
       - name: archive project
         run: |
+          pwd
+          cd ../
           pwd
           ls -l
           tar cvfz $PROJECT_NAME.tar.gz $PROJECT_NAME
