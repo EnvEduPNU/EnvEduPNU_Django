@@ -45,11 +45,15 @@ jobs:
   continuous-deployment:
     runs-on: ubuntu-20.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
       - name: archive project
         run: |
-          cd ..
           pwd
-          ls
+          cd ../
+          pwd
+          ls -l
           tar cvfz $PROJECT_NAME.tar.gz $PROJECT_NAME
           chmod 755 $PROJECT_NAME.tar.gz
         #aws 접근 id, key
