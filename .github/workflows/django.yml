@@ -21,26 +21,6 @@ env:
   DEPLOYMENT_GROUP_NAME: EnvEduServer_CodeDeploy
   
 jobs:
-  continuous-integration:
-      runs-on: ubuntu-latest
-      strategy:
-        max-parallel: 4
-        matrix:
-          python-version: [3.11]
-
-      steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Install Dependencies
-        run: |
-          pip3 install -r requirements.txt
-      - name: Run Tests
-        run: |
-          python3.11 manage.py migrate
-          python3.11 manage.py test
           
   continuous-deployment:
     runs-on: ubuntu-20.04
@@ -50,7 +30,6 @@ jobs:
         
       - name: archive project
         run: |
-          pwd
           cd ../
           pwd
           ls -l
@@ -77,3 +56,23 @@ jobs:
           --deployment-config-name CodeDeployDefault.OneAtATime 
           --deployment-group-name $DEPLOYMENT_GROUP_NAME 
           --s3-location bucket=$BUCKET_NAME,bundleType=tgz,key=$PROJECT_NAME/$PROJECT_NAME.tar.gz
+  continuous-integration:
+      runs-on: ubuntu-latest
+      strategy:
+        max-parallel: 4
+        matrix:
+          python-version: [3.11]
+
+      steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install Dependencies
+        run: |
+          pip3 install -r requirements.txt
+      - name: Run Tests
+        run: |
+          python3.11 manage.py migrate
+          python3.11 manage.py runserver
