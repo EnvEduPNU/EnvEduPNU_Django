@@ -75,4 +75,4 @@ jobs:
       - name: Run Tests
         run: |
           python3.11 manage.py migrate
-          python3.11 manage.py runserver
+          python3.11 manage.py test
