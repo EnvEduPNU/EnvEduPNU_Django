@@ -3,8 +3,6 @@ name: Django CI
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
     inputs:
       logLevel:
@@ -16,37 +14,28 @@ on:
           - info
           - warning
           - debug
-
+env:
+  PROJECT_NAME: EnvEdu_Django
+  BUCKET_NAME: env-edu-django-s3
+  CODE_DEPLOY_APP_NAME: EnvEduServer_CodeDeploy
+  DEPLOYMENT_GROUP_NAME: EnvEduServer_CodeDeploy
+  
 jobs:
   continuous-integration:
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.11]
-
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install Dependencies
-      run: |
-        pip3 install -r requirements.txt
-    - name: Run Tests
-      run: |
-        python3.11 manage.py migrate
-        python3.11 manage.py test
-        
+      - name: Checkout
+        shell: bash
 
-  continuous-deployment:
+      - name: archive project
+        run: |
+          cd ..
+          pwd
+          ls
+          tar cvfz $PROJECT_NAME.tar.gz $PROJECT_NAME
+          chmod 755 $PROJECT_NAME.tar.gz
 
-    runs-on: ubuntu-latest
-    needs: [ continuous-integration ]
-
-    steps:
-      # Step 1
+        #aws 접근 id, key
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -54,12 +43,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
 
-      # Step 2
-      - name: Create CodeDeploy Deployment
-        id: deploy
+        # s3에 압축한 jar파일 업로드
+      - name: Upload to S3
         run: |
-          aws deploy create-deployment \
-            --application-name EnvEduServer_CodeDeploy \
-            --deployment-group-name EnvEduServer_CodeDeploy \
-            --deployment-config-name CodeDeployDefault.OneAtATime \
-            --github-location repository=${{ github.repository }},commitId=${{ github.sha }}
+          cd ..
+          aws s3 cp --region ap-northeast-2 $PROJECT_NAME.tar.gz s3://$BUCKET_NAME/$PROJECT_NAME/
+
+        # s3에 업로드한 파일 code Deploy에서 배포 요청
+        # key는 bucket 안의 디렉토리 이름/파일 이름
+      - name: Code Deploy
+        run: aws deploy create-deployment 
+          --application-name $CODE_DEPLOY_APP_NAME 
+          --deployment-config-name CodeDeployDefault.OneAtATime 
+          --deployment-group-name $DEPLOYMENT_GROUP_NAME 
+          --s3-location bucket=$BUCKET_NAME,bundleType=tgz,key=$PROJECT_NAME/$PROJECT_NAME.tar.gz
