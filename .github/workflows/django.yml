@@ -47,9 +47,8 @@ jobs:
     steps:
       - name: archive project
         run: |
-          cd ..
           pwd
-          ls
+          ls -l
           tar cvfz $PROJECT_NAME.tar.gz $PROJECT_NAME
           chmod 755 $PROJECT_NAME.tar.gz
         #aws 접근 id, key
