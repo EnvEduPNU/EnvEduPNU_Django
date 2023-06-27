@@ -5,4 +5,4 @@ cd $REPOSITORY
 
 touch test
 
-python3.11 ./manage.py runserver
+python3 ./manage.py runserver
