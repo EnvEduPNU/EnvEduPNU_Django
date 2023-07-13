@@ -17,8 +17,8 @@ on:
 env:
   PROJECT_NAME: EnvEdu_Django
   BUCKET_NAME: env-edu-django-s3
-  CODE_DEPLOY_APP_NAME: EnvEduServer_CodeDeploy
-  DEPLOYMENT_GROUP_NAME: EnvEduServer_CodeDeploy
+  CODE_DEPLOY_APP_NAME: EnvEduDjango_CodeDeploy
+  DEPLOYMENT_GROUP_NAME: EnvEduDjango_CodeDeploy
   
 jobs:
           
